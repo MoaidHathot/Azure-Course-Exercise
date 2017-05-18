@@ -1,7 +1,7 @@
 # Azure Course Exercise
 This repositoty acts as the basis for a rolling exercise in CodeValue's Microsoft Azure course.
 ## Prerequisites
-1. The code is built and tested using Visual-Studio 2015 Update 2 and .NET 4.6.1.
+1. The code is built and tested using Visual-Studio 2017 Update 2 and .NET Core 1.1.
 2. The system is preconfigured to use SQL Server LocalDB for the database stores. SQL Server Express (or any other edition) can be used, however the application settiongs should be changed accordingly in the system configuration files.
 
 ## Compiling and Running the System
