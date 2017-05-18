@@ -1,11 +1,13 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using CodeTweet.DomainModel;
+using CodeTweet.IdentityDal.Model;
 using CodeTweet.Queueing;
 using CodeTweet.TweetsDal;
-using CodeTweet.Web.Models;
-using Microsoft.AspNet.Identity;
+using CodeTweet.Web.Models.TweetsViewModels;
+using Microsoft.AspNetCore.Identity;
 
 namespace CodeTweet.Web.Controllers
 {
@@ -14,11 +16,13 @@ namespace CodeTweet.Web.Controllers
     {
         private readonly ITweetsRepository _repository;
         private readonly INotificationEnqueue _queue;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public TweetsController(ITweetsRepository repository, INotificationEnqueue queue)
+        public TweetsController(ITweetsRepository repository, INotificationEnqueue queue, UserManager<ApplicationUser> userManager)
         {
             _repository = repository;
             _queue = queue;
+            _userManager = userManager;
         }
 
         public async Task<ActionResult> Index()
@@ -28,7 +32,7 @@ namespace CodeTweet.Web.Controllers
 
         public async Task<ActionResult> Me()
         {
-            string userName = User.Identity.GetUserName();
+            string userName = _userManager.GetUserName(User);
             return View(await _repository.GetTweets(userName));
         }
 
@@ -39,14 +43,14 @@ namespace CodeTweet.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind(Include = "Text")] NewTweetViewModel newTweet)
+        public async Task<ActionResult> Create([Bind("Text")] NewTweetViewModel newTweet)
         {
             if (ModelState.IsValid)
             {
                 var tweet = new Tweet
                 {
                     Id = Guid.NewGuid(),
-                    Author = User.Identity.GetUserName(),
+                    Author = _userManager.GetUserName(User),
                     Text = newTweet.Text,
                     Timestamp = DateTime.UtcNow
                 };

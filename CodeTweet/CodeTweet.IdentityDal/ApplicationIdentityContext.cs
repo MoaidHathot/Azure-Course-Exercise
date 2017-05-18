@@ -1,18 +1,14 @@
 ﻿using CodeTweet.IdentityDal.Model;
-using Microsoft.AspNet.Identity.EntityFramework;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace CodeTweet.IdentityDal
 {
     public class ApplicationIdentityContext : IdentityDbContext<ApplicationUser>
     {
-        public ApplicationIdentityContext()
-            : base("CodeTweetIdentity")
+        public ApplicationIdentityContext(DbContextOptions<ApplicationIdentityContext> options)
+            : base(options)
         {
-        }
-
-        public static ApplicationIdentityContext Create()
-        {
-            return new ApplicationIdentityContext();
         }
     }
 }

@@ -4,18 +4,25 @@ using System.Threading.Tasks;
 using CodeTweet.DomainModel;
 using CodeTweet.IdentityDal;
 using CodeTweet.Queueing;
-using CodeTweet.Queueing.ZeroMQ;
+using Microsoft.EntityFrameworkCore;
 using NLog;
 
 namespace CodeTweet.Notifications
 {
     public class NotificationService
     {
-        private readonly INotificationDequeue _dequeue = new ZeroNotificationDequeue();
+        private readonly INotificationDequeue _dequeue;
+        private readonly DbContextOptions<ApplicationIdentityContext> _identityContextOptions;
         private readonly ILogger _logger = LogManager.GetCurrentClassLogger();
         private readonly CancellationTokenSource _cts = new CancellationTokenSource();
 
         private Task _task;
+
+        public NotificationService(INotificationDequeue notificationDequeue, DbContextOptions<ApplicationIdentityContext> identityContextOptions)
+        {
+            _dequeue = notificationDequeue;
+            _identityContextOptions = identityContextOptions;
+        }
 
         public void Start()
         {
@@ -44,7 +51,7 @@ namespace CodeTweet.Notifications
 
             try
             {
-                using (var context = new ApplicationIdentityContext())
+                using (var context = new ApplicationIdentityContext(_identityContextOptions))
                 {
                     var repository = new UserRepository(context);
                     var users = await repository.GetUsersWithNotificationsAsync(); // Can be cached

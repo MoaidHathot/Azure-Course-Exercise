@@ -14,7 +14,6 @@ namespace CodeTweet.TweetsDal.Model
 
         public string Author { get; set; }
 
-        [Index]
         public DateTime Timestamp { get; set; }
     }
 }

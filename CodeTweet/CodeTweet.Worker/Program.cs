@@ -1,26 +1,83 @@
-﻿using CodeTweet.Notifications;
-using Topshelf;
+﻿using System;
+using System.IO;
+using CodeTweet.IdentityDal;
+using CodeTweet.Notifications;
+using CodeTweet.Queueing.ZeroMQ;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using PeterKottas.DotNetCore.WindowsService;
+using PeterKottas.DotNetCore.WindowsService.Base;
+using PeterKottas.DotNetCore.WindowsService.Interfaces;
 
 namespace CodeTweet.Worker
 {
     class Program
     {
-        static void Main()
+        public static void Main()
         {
-            HostFactory.Run(x =>
-            {
-                x.Service<NotificationService>(s =>
-                {
-                    s.ConstructUsing(name => new NotificationService());
-                    s.WhenStarted(ns => ns.Start());
-                    s.WhenStopped(ns => ns.Stop());
-                });
-                x.RunAsLocalSystem();
+            var configurationBuilder = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json");
+            var configuration = configurationBuilder.Build();
 
-                x.SetDescription("CodeTweet Notification Service");
-                x.SetDisplayName("CodeTweet");
-                x.SetServiceName("CodeTweet");
+            ServiceRunner<NotificationServiceWrapper>.Run(config =>
+            {
+                var name = config.GetDefaultName();
+                config.Service(serviceConfig =>
+                {
+                    serviceConfig.ServiceFactory(extraArguments =>
+                    {
+                        var zeroConfiguration = new ZeroConfiguration();
+                        configuration.GetSection("ZeroMq").Bind(zeroConfiguration);
+                        var notificationDequeue = new ZeroNotificationDequeue(zeroConfiguration);
+
+                        var identityContextOptionsBuilder = new DbContextOptionsBuilder<ApplicationIdentityContext>();
+                        identityContextOptionsBuilder.UseSqlServer(configuration.GetConnectionString("Identity"));
+
+                        var notificationService = new NotificationService(notificationDequeue, identityContextOptionsBuilder.Options);
+                        return new NotificationServiceWrapper(notificationService);
+                    });
+                    serviceConfig.OnStart((service, extraArguments) =>
+                    {
+                        Console.WriteLine("Service {0} started", name);
+                        service.Start();
+                    });
+
+                    serviceConfig.OnStop(service =>
+                    {
+                        Console.WriteLine("Service {0} stopped", name);
+                        service.Stop();
+                    });
+
+                    serviceConfig.OnError(e =>
+                    {
+                        Console.WriteLine("Service {0} errored with exception : {1}", name, e.Message);
+                    });
+                });
             });
+
+            Console.WriteLine("Press <ENTER> to exit...");
+            Console.ReadLine();
+        }
+
+        class NotificationServiceWrapper : MicroService, IMicroService
+        {
+            private readonly NotificationService _inner;
+
+            public NotificationServiceWrapper(NotificationService inner)
+            {
+                _inner = inner;
+            }
+
+            public void Start()
+            {
+                _inner.Start();
+            }
+
+            public void Stop()
+            {
+                _inner.Stop();
+            }
         }
     }
 }

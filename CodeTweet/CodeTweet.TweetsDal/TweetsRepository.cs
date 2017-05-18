@@ -1,10 +1,10 @@
-﻿using System.Data.Entity;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using CodeTweet.DomainModel;
 using CodeTweet.TweetsDal.Model;
+using Microsoft.EntityFrameworkCore;
 
 namespace CodeTweet.TweetsDal
 {

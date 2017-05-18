@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Configuration;
 using CodeTweet.DomainModel;
 using NetMQ;
 using NetMQ.Sockets;
@@ -9,16 +8,12 @@ namespace CodeTweet.Queueing.ZeroMQ
 {
     public sealed class ZeroNotificationDequeue : INotificationDequeue
     {
-        private static readonly string QueueAddress = ConfigurationManager.AppSettings["ZeroMqAddress"];
-
-        private readonly NetMQContext _context;
         private readonly PullSocket _client;
 
-        public ZeroNotificationDequeue()
+        public ZeroNotificationDequeue(ZeroConfiguration configuration)
         {
-            _context = NetMQContext.Create();
-            _client = _context.CreatePullSocket();
-            _client.Bind(QueueAddress);
+            _client = new PullSocket();
+            _client.Bind(configuration.ZeroMqAddress);
         }
 
         public Tweet[] Dequeue()
@@ -34,7 +29,6 @@ namespace CodeTweet.Queueing.ZeroMQ
         public void Dispose()
         {
             _client.Dispose();
-            _context.Dispose();
         }
     }
 }
