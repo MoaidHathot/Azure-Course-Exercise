@@ -16,5 +16,6 @@ namespace CodeTweet.TweetsDal.Model
         public string Author { get; set; }
 
         public DateTime Timestamp { get; set; }
+        public string ImageUri { get; set; }
     }
 }

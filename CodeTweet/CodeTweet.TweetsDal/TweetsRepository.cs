@@ -11,7 +11,7 @@ using Newtonsoft.Json.Linq;
 
 namespace CodeTweet.TweetsDal
 {
-    public class TweetsRepository : ITweetsRepository
+    public sealed class TweetsRepository : ITweetsRepository
     {
         private readonly DocumentDbConfiguration _configuration;
         private DocumentClient _documentClient;
@@ -28,6 +28,18 @@ namespace CodeTweet.TweetsDal
             DocumentCollectionUri = UriFactory.CreateDocumentCollectionUri(_configuration.DatabaseId, _configuration.CollectionId);
         }
 
+        public async Task<Tweet[]> GetAllTweetsAsync()
+            => (await CreateDocumentQuery()).ToArray();
+
+        public async Task<Tweet[]> GetTweets(string userName)
+            => (await CreateDocumentQuery()).Where(tweet => tweet.Author == userName).ToArray();
+
+        public async Task CreateTweetAsync(Tweet tweet)
+            => await (await _client).CreateDocumentAsync(DocumentCollectionUri, tweet);
+
+        private async Task<IOrderedQueryable<Tweet>> CreateDocumentQuery()
+            => (await _client).CreateDocumentQuery<Tweet>(DocumentCollectionUri);
+
         private async Task<DocumentClient> InitializeDocumentDbClient()
         {
             _documentClient = new DocumentClient(new Uri(_configuration.EndPoint), _configuration.PrimaryKey);
@@ -37,17 +49,8 @@ namespace CodeTweet.TweetsDal
 
             return _documentClient;
         }
-      
-        public async Task<Tweet[]> GetAllTweetsAsync() 
-            => (await CreateDocumentQuery()).ToArray();
 
-        public async Task<Tweet[]> GetTweets(string userName)
-            => (await CreateDocumentQuery()).Where(tweet => tweet.Author == userName).ToArray();
-
-        public async Task CreateTweetAsync(Tweet tweet) 
-            => await (await _client).CreateDocumentAsync(DocumentCollectionUri, tweet);
-
-        private async Task<IOrderedQueryable<Tweet>> CreateDocumentQuery()
-            => (await _client).CreateDocumentQuery<Tweet>(DocumentCollectionUri);
+        public void Dispose() 
+            => _documentClient?.Dispose();
     }
 }

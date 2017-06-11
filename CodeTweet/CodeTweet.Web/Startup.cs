@@ -1,5 +1,6 @@
 ﻿using CodeTweet.IdentityDal;
 using CodeTweet.IdentityDal.Model;
+using CodeTweet.ImagesDal;
 using CodeTweet.Queueing;
 using CodeTweet.Queueing.ZeroMQ;
 using CodeTweet.TweetsDal;
@@ -46,11 +47,13 @@ namespace CodeTweet.Web
 
             var documentDbConfiguration = new DocumentDbConfiguration();
             Configuration.GetSection("DocumentDB").Bind(documentDbConfiguration);
-            
             services.AddSingleton(documentDbConfiguration);
 
-            //services.AddDbContext<TweetsContext>(options =>
-            //    options.UseSqlServer(Configuration.GetConnectionString("Tweets")));
+            var imagesDbConfiguration = new ImagesDbConfiguration();
+            Configuration.GetSection("ImagesDB").Bind(imagesDbConfiguration);
+            services.AddSingleton(imagesDbConfiguration);
+
+            services.AddTransient<IImagesRepository, ImagesRepository>();
 
             services.AddTransient<ITweetsRepository, TweetsRepository>();
 

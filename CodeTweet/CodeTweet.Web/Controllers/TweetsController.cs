@@ -7,6 +7,7 @@ using CodeTweet.IdentityDal.Model;
 using CodeTweet.Queueing;
 using CodeTweet.TweetsDal;
 using CodeTweet.Web.Models.TweetsViewModels;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 
 namespace CodeTweet.Web.Controllers
@@ -43,7 +44,7 @@ namespace CodeTweet.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind("Text")] NewTweetViewModel newTweet)
+        public async Task<ActionResult> Create([Bind("Text", "Image")] NewTweetViewModel newTweet)
         {
             if (ModelState.IsValid)
             {

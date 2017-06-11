@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeTweet.Web", "CodeTweet.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeTweet.Utilities", "CodeTweet.Utilities\CodeTweet.Utilities.csproj", "{D3A986AB-0178-49D1-A09B-F7F62B4B3FDC}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeTweet.ImagesDal", "CodeTweet.ImagesDal\CodeTweet.ImagesDal.csproj", "{9F277B70-E391-446B-AC2A-22F0C15B7D8D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -59,6 +61,10 @@ Global
 		{D3A986AB-0178-49D1-A09B-F7F62B4B3FDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D3A986AB-0178-49D1-A09B-F7F62B4B3FDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D3A986AB-0178-49D1-A09B-F7F62B4B3FDC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9F277B70-E391-446B-AC2A-22F0C15B7D8D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F277B70-E391-446B-AC2A-22F0C15B7D8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9F277B70-E391-446B-AC2A-22F0C15B7D8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9F277B70-E391-446B-AC2A-22F0C15B7D8D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -70,5 +76,6 @@ Global
 		{10936260-F00F-44D0-8B98-824C2B60A76F} = {36640347-8013-4A8B-B2F2-423B7E905403}
 		{8C6E84AB-6663-4305-9C46-9EAD0AAC596F} = {36640347-8013-4A8B-B2F2-423B7E905403}
 		{D3A986AB-0178-49D1-A09B-F7F62B4B3FDC} = {36640347-8013-4A8B-B2F2-423B7E905403}
+		{9F277B70-E391-446B-AC2A-22F0C15B7D8D} = {36640347-8013-4A8B-B2F2-423B7E905403}
 	EndGlobalSection
 EndGlobal

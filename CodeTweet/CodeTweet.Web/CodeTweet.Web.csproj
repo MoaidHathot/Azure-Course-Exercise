@@ -35,6 +35,7 @@
   <ItemGroup>
     <ProjectReference Include="..\CodeTweet.DomainModel\CodeTweet.DomainModel.csproj" />
     <ProjectReference Include="..\CodeTweet.IdentityDal\CodeTweet.IdentityDal.csproj" />
+    <ProjectReference Include="..\CodeTweet.ImagesDal\CodeTweet.ImagesDal.csproj" />
     <ProjectReference Include="..\CodeTweet.Queueing\CodeTweet.Queueing.csproj" />
     <ProjectReference Include="..\CodeTweet.TweetsDal\CodeTweet.TweetsDal.csproj" />
   </ItemGroup>
