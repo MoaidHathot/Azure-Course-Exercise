@@ -44,8 +44,13 @@ namespace CodeTweet.Web
 
             services.AddMvc();
 
-            services.AddDbContext<TweetsContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("Tweets")));
+            var documentDbConfiguration = new DocumentDbConfiguration();
+            Configuration.GetSection("DocumentDB").Bind(documentDbConfiguration);
+            
+            services.AddSingleton(documentDbConfiguration);
+
+            //services.AddDbContext<TweetsContext>(options =>
+            //    options.UseSqlServer(Configuration.GetConnectionString("Tweets")));
 
             services.AddTransient<ITweetsRepository, TweetsRepository>();
 

@@ -18,17 +18,15 @@ namespace CodeTweet.Queueing.ZeroMQ
 
         public Tweet[] Dequeue()
         {
-            string serializedTweet;
-            if (!_client.TryReceiveFrameString(TimeSpan.FromSeconds(1), out serializedTweet))
+            if (!_client.TryReceiveFrameString(TimeSpan.FromSeconds(1), out string serializedTweet))
+            {
                 return new Tweet[0];
+            }
 
-            var tweet = JsonConvert.DeserializeObject<Tweet>(serializedTweet);
-            return new[] {tweet};
+            return new[] { JsonConvert.DeserializeObject<Tweet>(serializedTweet) };
         }
 
-        public void Dispose()
-        {
-            _client.Dispose();
-        }
+        public void Dispose() 
+            => _client.Dispose();
     }
 }

@@ -1,44 +1,53 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
-using AutoMapper;
-using AutoMapper.QueryableExtensions;
 using CodeTweet.DomainModel;
-using CodeTweet.TweetsDal.Model;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.Azure.Documents;
+using Microsoft.Azure.Documents.Client;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace CodeTweet.TweetsDal
 {
     public class TweetsRepository : ITweetsRepository
     {
-        private static readonly IMapper Mapper = CreateMapper();
-        private readonly TweetsContext _context;
-
-        public TweetsRepository(TweetsContext context)
+        private readonly DocumentDbConfiguration _configuration;
+        private DocumentClient _documentClient;
+        private readonly AsyncLazy<DocumentClient> _client;
+        private Uri DocumentCollectionUri { get; }
+        private Uri DatabaseUri { get; }
+        
+        public TweetsRepository(DocumentDbConfiguration configuration)
         {
-            _context = context;
+            _configuration = configuration;
+            _client = new AsyncLazy<DocumentClient>(() => InitializeDocumentDbClient());
+
+            DatabaseUri = UriFactory.CreateDatabaseUri(_configuration.DatabaseId);
+            DocumentCollectionUri = UriFactory.CreateDocumentCollectionUri(_configuration.DatabaseId, _configuration.CollectionId);
         }
 
-        public Task<Tweet[]> GetAllTweetsAsync()
+        private async Task<DocumentClient> InitializeDocumentDbClient()
         {
-            return _context.Tweets.OrderByDescending(t => t.Timestamp).ProjectTo<Tweet>(Mapper.ConfigurationProvider).ToArrayAsync();
-        }
+            _documentClient = new DocumentClient(new Uri(_configuration.EndPoint), _configuration.PrimaryKey);
+            
+            await _documentClient.CreateDatabaseIfNotExistsAsync(new Database {Id = _configuration.DatabaseId});
+            await _documentClient.CreateDocumentCollectionIfNotExistsAsync(DatabaseUri, new DocumentCollection {Id = _configuration.CollectionId});
 
-        public Task<Tweet[]> GetTweets(string userName)
-        {
-            return _context.Tweets.Where(t => t.Author == userName).OrderByDescending(t => t.Timestamp).ProjectTo<Tweet>(Mapper.ConfigurationProvider).ToArrayAsync();
+            return _documentClient;
         }
+      
+        public async Task<Tweet[]> GetAllTweetsAsync() 
+            => (await CreateDocumentQuery()).ToArray();
 
-        public Task CreateTweetAsync(Tweet tweet)
-        {
-            var tweetEntity = Mapper.Map<TweetEntity>(tweet);
-            _context.Tweets.Add(tweetEntity);
-            return _context.SaveChangesAsync();
-        }
+        public async Task<Tweet[]> GetTweets(string userName)
+            => (await CreateDocumentQuery()).Where(tweet => tweet.Author == userName).ToArray();
 
-        private static IMapper CreateMapper()
-        {
-            var mapperConfiguration = new MapperConfiguration(cfg => cfg.CreateMap<TweetEntity, Tweet>().ReverseMap());
-            return mapperConfiguration.CreateMapper();
-        }
+        public async Task CreateTweetAsync(Tweet tweet) 
+            => await (await _client).CreateDocumentAsync(DocumentCollectionUri, tweet);
+
+        private async Task<IOrderedQueryable<Tweet>> CreateDocumentQuery()
+            => (await _client).CreateDocumentQuery<Tweet>(DocumentCollectionUri);
     }
 }

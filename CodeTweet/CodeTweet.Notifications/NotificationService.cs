@@ -27,6 +27,7 @@ namespace CodeTweet.Notifications
         public void Start()
         {
             var cancellationToken = _cts.Token;
+            
             _task = Task.Factory.StartNew(async () =>
             {
                 while (!cancellationToken.IsCancellationRequested)
@@ -47,7 +48,9 @@ namespace CodeTweet.Notifications
         private async Task OnTweets(Tweet[] tweets)
         {
             if (tweets.Length == 0)
+            {
                 return;
+            }
 
             try
             {
@@ -55,11 +58,14 @@ namespace CodeTweet.Notifications
                 {
                     var repository = new UserRepository(context);
                     var users = await repository.GetUsersWithNotificationsAsync(); // Can be cached
+                    
                     foreach (var tweet in tweets)
+                    {
                         foreach (var user in users)
                         {
                             SendNotification(tweet, user);
                         }
+                    }
                 }
             }
             catch (Exception ex)

@@ -1,13 +1,14 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace CodeTweet.TweetsDal.Model
 {
-    [Table("Tweets")]
     public class TweetEntity
     {
-        [Key]
+        [JsonProperty(PropertyName = "id")]
         public Guid Id { get; set; }
 
         public string Text { get; set; }
