@@ -4,6 +4,7 @@ using CodeTweet.ImagesDal;
 using CodeTweet.Queueing;
 using CodeTweet.Queueing.ZeroMQ;
 using CodeTweet.TweetsDal;
+using CodeTweet.Web.Managers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -60,6 +61,8 @@ namespace CodeTweet.Web
             ZeroConfiguration zeroConfiguration = new ZeroConfiguration();
             Configuration.GetSection("ZeroMq").Bind(zeroConfiguration);
             services.AddSingleton<INotificationEnqueue>(provider => new ZeroNotificationEnqueue(zeroConfiguration));
+
+            services.AddTransient<TweetsManager>();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)

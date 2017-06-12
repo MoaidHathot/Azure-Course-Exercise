@@ -10,7 +10,7 @@ namespace CodeTweet.ImagesDal
     {
         private readonly ImagesDbConfiguration _configuration;
         private CloudBlobContainer _container;
-        private AsyncLazy<CloudBlobContainer> _asyncContainer;
+        private readonly AsyncLazy<CloudBlobContainer> _asyncContainer;
         
         public ImagesRepository(ImagesDbConfiguration configuration)
         {
@@ -42,6 +42,11 @@ namespace CodeTweet.ImagesDal
             await blob.UploadFromStreamAsync(stream);
 
             return blob.Uri.ToString();
+        }
+
+        public void Dispose()
+        {
+            
         }
     }
 }

@@ -4,8 +4,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using CodeTweet.DomainModel;
 using CodeTweet.IdentityDal.Model;
+using CodeTweet.ImagesDal;
 using CodeTweet.Queueing;
 using CodeTweet.TweetsDal;
+using CodeTweet.Web.Managers;
 using CodeTweet.Web.Models.TweetsViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -15,32 +17,21 @@ namespace CodeTweet.Web.Controllers
     [Authorize]
     public class TweetsController : Controller
     {
-        private readonly ITweetsRepository _repository;
-        private readonly INotificationEnqueue _queue;
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly TweetsManager _manager;
 
-        public TweetsController(ITweetsRepository repository, INotificationEnqueue queue, UserManager<ApplicationUser> userManager)
+        public TweetsController(TweetsManager manager)
         {
-            _repository = repository;
-            _queue = queue;
-            _userManager = userManager;
+            _manager = manager;
         }
 
-        public async Task<ActionResult> Index()
-        {
-            return View(await _repository.GetAllTweetsAsync());
-        }
+        public async Task<ActionResult> Index() 
+            => View(await _manager.GetAllTweetsAsync());
 
-        public async Task<ActionResult> Me()
-        {
-            string userName = _userManager.GetUserName(User);
-            return View(await _repository.GetTweets(userName));
-        }
+        public async Task<ActionResult> Me() 
+            => View(await _manager.GetTweets(User));
 
-        public ActionResult Create()
-        {
-            return View();
-        }
+        public ActionResult Create() 
+            => View();
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -48,15 +39,8 @@ namespace CodeTweet.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                var tweet = new Tweet
-                {
-                    Id = Guid.NewGuid(),
-                    Author = _userManager.GetUserName(User),
-                    Text = newTweet.Text,
-                    Timestamp = DateTime.UtcNow
-                };
-                await _repository.CreateTweetAsync(tweet);
-                await _queue.EnqueueNotificationAsync(tweet);
+                await _manager.CreateTweetAsync(User, newTweet);
+                
                 return RedirectToAction("Index");
             }
 

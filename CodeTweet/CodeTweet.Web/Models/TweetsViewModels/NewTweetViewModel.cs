@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using CodeTweet.Web.Utilities;
 using Microsoft.AspNetCore.Http;
 
 namespace CodeTweet.Web.Models.TweetsViewModels
@@ -10,7 +11,7 @@ namespace CodeTweet.Web.Models.TweetsViewModels
         [MaxLength(140)]
         public string Text { get; set; }
 
-        [FileExtensions(Extensions = "jpg,jpeg,png")]
+        [PostedFileExtensions(Extensions = "jpg,jpeg,png,gif")]
         public IFormFile Image { get; set; }
     }
 }

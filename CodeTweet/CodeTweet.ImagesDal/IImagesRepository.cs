@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace CodeTweet.ImagesDal
 {
-    public interface IImagesRepository
+    public interface IImagesRepository : IDisposable
     {
         Task<string> UploadImageAsync(string id, Stream stream);
     }
