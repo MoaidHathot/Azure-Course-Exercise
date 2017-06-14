@@ -29,7 +29,8 @@ namespace CodeTweet.TweetsDal
 
         public async Task<Tweet[]> GetTweets(string userName) 
             => (await (await _table)
-                .ExecuteQuerySegmentedAsync(new TableQuery<TweetTableStorageEntity>().Where(TableQuery.GenerateFilterCondition("Author", QueryComparisons.Equal, userName)), new TableContinuationToken()))
+                .ExecuteQuerySegmentedAsync(new TableQuery<TweetTableStorageEntity>()
+                    .Where(TableQuery.GenerateFilterCondition(nameof(TweetTableStorageEntity.Author), QueryComparisons.Equal, userName)), new TableContinuationToken()))
                 .Results
                 .Select(tweetEntry => Mapper.Value.Map<Tweet>(tweetEntry))
                 .ToArray();
@@ -46,7 +47,7 @@ namespace CodeTweet.TweetsDal
             var storageAccount = CloudStorageAccount.Parse(configuration.ConnectionString);
             var tableClient = storageAccount.CreateCloudTableClient();
 
-            var table = tableClient.GetTableReference("Tweets");
+            var table = tableClient.GetTableReference(configuration.TableName);
 
             await table.CreateIfNotExistsAsync();
 

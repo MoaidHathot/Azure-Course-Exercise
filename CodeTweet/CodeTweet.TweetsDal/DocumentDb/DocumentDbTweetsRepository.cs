@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using CodeTweet.DomainModel;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
@@ -14,6 +15,8 @@ namespace CodeTweet.TweetsDal
         private readonly AsyncLazy<DocumentClient> _client;
         private Uri DocumentCollectionUri { get; }
         private Uri DatabaseUri { get; }
+
+        private static readonly Lazy<IMapper> Mapper = new Lazy<IMapper>(CreateMapper);
         
         public DocumentDbTweetsRepository(DocumentDbConfiguration configuration)
         {
@@ -25,16 +28,16 @@ namespace CodeTweet.TweetsDal
         }
 
         public async Task<Tweet[]> GetAllTweetsAsync()
-            => (await CreateDocumentQuery()).ToArray();
+            => (await CreateDocumentQuery()).ToArray().Select(tweet => Mapper.Value.Map<Tweet>(tweet)).ToArray();
 
         public async Task<Tweet[]> GetTweets(string userName)
-            => (await CreateDocumentQuery()).Where(tweet => tweet.Author == userName).ToArray();
+            => (await CreateDocumentQuery()).Where(tweet => tweet.Author == userName).ToArray().Select(tweet => Mapper.Value.Map<Tweet>(tweet)).ToArray();
 
         public async Task CreateTweetAsync(Tweet tweet)
-            => await (await _client).CreateDocumentAsync(DocumentCollectionUri, tweet);
+            => await (await _client).CreateDocumentAsync(DocumentCollectionUri, Mapper.Value.Map<TweetDocumentDbEntity>(tweet));
 
-        private async Task<IOrderedQueryable<Tweet>> CreateDocumentQuery()
-            => (await _client).CreateDocumentQuery<Tweet>(DocumentCollectionUri);
+        private async Task<IOrderedQueryable<TweetDocumentDbEntity>> CreateDocumentQuery()
+            => (await _client).CreateDocumentQuery<TweetDocumentDbEntity>(DocumentCollectionUri);
 
         private async Task<DocumentClient> InitializeDocumentDbClient()
         {
@@ -48,5 +51,9 @@ namespace CodeTweet.TweetsDal
 
         public void Dispose() 
             => _documentClient?.Dispose();
+        
+        private static IMapper CreateMapper()
+            => new MapperConfiguration(cfg => 
+                cfg.CreateMap<Tweet, TweetDocumentDbEntity>().ReverseMap()).CreateMapper();
     }
 }

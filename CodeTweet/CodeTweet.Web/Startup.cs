@@ -61,8 +61,8 @@ namespace CodeTweet.Web
 
             services.AddTransient<IImagesRepository, ImagesRepository>();
 
-            //services.AddTransient<ITweetsRepository, DocumentDbTweetsRepository>();
-            services.AddTransient<ITweetsRepository, TableStorageTweetsRepository>();
+            services.AddTransient<ITweetsRepository, DocumentDbTweetsRepository>();
+            //services.AddTransient<ITweetsRepository, TableStorageTweetsRepository>();
 
             ZeroConfiguration zeroConfiguration = new ZeroConfiguration();
             Configuration.GetSection("ZeroMq").Bind(zeroConfiguration);
