@@ -49,6 +49,11 @@ namespace CodeTweet.Web
             var documentDbConfiguration = new DocumentDbConfiguration();
             Configuration.GetSection("DocumentDB").Bind(documentDbConfiguration);
             services.AddSingleton(documentDbConfiguration);
+            
+            var tableStorageConfiguration = new TableStorageConfiguration();
+            Configuration.GetSection("TableStorage").Bind(tableStorageConfiguration);
+            services.AddSingleton(tableStorageConfiguration);
+            
 
             var imagesDbConfiguration = new ImagesDbConfiguration();
             Configuration.GetSection("ImagesDB").Bind(imagesDbConfiguration);
@@ -56,7 +61,8 @@ namespace CodeTweet.Web
 
             services.AddTransient<IImagesRepository, ImagesRepository>();
 
-            services.AddTransient<ITweetsRepository, TweetsRepository>();
+            //services.AddTransient<ITweetsRepository, DocumentDbTweetsRepository>();
+            services.AddTransient<ITweetsRepository, TableStorageTweetsRepository>();
 
             ZeroConfiguration zeroConfiguration = new ZeroConfiguration();
             Configuration.GetSection("ZeroMq").Bind(zeroConfiguration);

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -22,35 +23,36 @@ namespace CodeTweet.Web.Managers
         private readonly INotificationEnqueue _queue;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public TweetsManager(ITweetsRepository tweetsRepository, IImagesRepository imagesRepository, INotificationEnqueue queue, UserManager<ApplicationUser> userManager)
+        public TweetsManager(ITweetsRepository tweetsRepository, IImagesRepository imagesRepository,
+            INotificationEnqueue queue, UserManager<ApplicationUser> userManager)
         {
             _tweetsRepository = tweetsRepository;
             _imagesRepository = imagesRepository;
             _queue = queue;
             _userManager = userManager;
         }
-        
-        public async Task<Tweet[]> GetAllTweetsAsync() 
+
+        public async Task<Tweet[]> GetAllTweetsAsync()
             => await _tweetsRepository.GetAllTweetsAsync();
 
-        public async Task<Tweet[]> GetTweets(ClaimsPrincipal user) 
+        public async Task<Tweet[]> GetTweets(ClaimsPrincipal user)
             => await _tweetsRepository.GetTweets(_userManager.GetUserName(user));
 
         public async Task CreateTweetAsync(ClaimsPrincipal user, NewTweetViewModel tweetViewModel)
         {
             var tweetId = Guid.NewGuid();
-            
-            var imageUrl = null != tweetViewModel.Image 
-                ? await UploadImage(tweetId.ToString(), tweetViewModel.Image) 
+
+            var imageUrl = null != tweetViewModel.Image
+                ? await UploadImage(tweetId.ToString(), tweetViewModel.Image)
                 : string.Empty;
-    
+
             var tweet = new Tweet
             {
                 Id = tweetId,
                 Author = _userManager.GetUserName(user),
                 Text = tweetViewModel?.Text ?? string.Empty,
                 Timestamp = DateTime.UtcNow,
-                Image = imageUrl
+                ImageUri = imageUrl
             };
 
             await _tweetsRepository.CreateTweetAsync(tweet);

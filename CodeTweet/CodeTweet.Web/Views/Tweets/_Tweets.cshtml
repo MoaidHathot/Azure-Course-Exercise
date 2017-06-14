@@ -12,7 +12,7 @@
             @Html.DisplayNameFor(model => model.Timestamp)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Image)
+            Attached Files           
         </th>
     </tr>
 
@@ -29,9 +29,9 @@
                 @Html.DisplayFor(modelItem => item.Timestamp)
             </td>
             <td>
-                @if (!string.IsNullOrWhiteSpace(item.Image))
+                @if (!string.IsNullOrWhiteSpace(item.ImageUri))
                 {
-                    <a href="@item.Image">Attached Image</a>
+                    <a href="@item.ImageUri">Image</a>
                 }
             </td>
         </tr>

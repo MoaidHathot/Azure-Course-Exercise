@@ -1,17 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using CodeTweet.DomainModel;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace CodeTweet.TweetsDal
 {
-    public sealed class TweetsRepository : ITweetsRepository
+    public sealed class DocumentDbTweetsRepository : ITweetsRepository
     {
         private readonly DocumentDbConfiguration _configuration;
         private DocumentClient _documentClient;
@@ -19,7 +15,7 @@ namespace CodeTweet.TweetsDal
         private Uri DocumentCollectionUri { get; }
         private Uri DatabaseUri { get; }
         
-        public TweetsRepository(DocumentDbConfiguration configuration)
+        public DocumentDbTweetsRepository(DocumentDbConfiguration configuration)
         {
             _configuration = configuration;
             _client = new AsyncLazy<DocumentClient>(() => InitializeDocumentDbClient());
