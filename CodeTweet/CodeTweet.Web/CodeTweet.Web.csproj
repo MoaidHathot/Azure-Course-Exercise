@@ -11,6 +11,10 @@
   <PropertyGroup>
     <UserSecretsId>aspnet-CodeTweet.Web-7fbf4cb0-493e-4c5c-bc01-50f91457796c</UserSecretsId>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="wwwroot\images\CodeValueLogo.png" />
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore" Version="1.1.2" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="1.1.2" />

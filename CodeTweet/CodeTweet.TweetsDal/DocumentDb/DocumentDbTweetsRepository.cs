@@ -28,10 +28,17 @@ namespace CodeTweet.TweetsDal
         }
 
         public async Task<Tweet[]> GetAllTweetsAsync()
-            => (await CreateDocumentQuery()).ToArray().Select(tweet => Mapper.Value.Map<Tweet>(tweet)).ToArray();
+            => (await CreateDocumentQuery())
+                .ToArray()
+                .Select(tweet => Mapper.Value.Map<Tweet>(tweet))
+                .ToArray();
 
         public async Task<Tweet[]> GetTweets(string userName)
-            => (await CreateDocumentQuery()).Where(tweet => tweet.Author == userName).ToArray().Select(tweet => Mapper.Value.Map<Tweet>(tweet)).ToArray();
+            => (await CreateDocumentQuery())
+                .Where(tweet => tweet.Author == userName)
+                .ToArray()
+                .Select(tweet => Mapper.Value.Map<Tweet>(tweet))
+                .ToArray();
 
         public async Task CreateTweetAsync(Tweet tweet)
             => await (await _client).CreateDocumentAsync(DocumentCollectionUri, Mapper.Value.Map<TweetDocumentDbEntity>(tweet));

@@ -34,7 +34,6 @@ namespace CodeTweet.Web.Managers
 
         public async Task<Tweet[]> GetAllTweetsAsync()
             => await _tweetsRepository.GetAllTweetsAsync();
-
         public async Task<Tweet[]> GetTweets(ClaimsPrincipal user)
             => await _tweetsRepository.GetTweets(_userManager.GetUserName(user));
 
