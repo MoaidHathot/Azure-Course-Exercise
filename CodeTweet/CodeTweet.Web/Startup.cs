@@ -2,12 +2,13 @@
 using CodeTweet.IdentityDal.Model;
 using CodeTweet.ImagesDal;
 using CodeTweet.Queueing;
-using CodeTweet.Queueing.ZeroMQ;
+using CodeTweet.Queueing.ServiceBus;
 using CodeTweet.TweetsDal;
 using CodeTweet.Web.Managers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.Azure.ServiceBus;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -52,8 +53,7 @@ namespace CodeTweet.Web
             
             var tableStorageConfiguration = new TableStorageConfiguration();
             Configuration.GetSection("TableStorage").Bind(tableStorageConfiguration);
-            services.AddSingleton(tableStorageConfiguration);
-            
+            services.AddSingleton(tableStorageConfiguration);            
 
             var imagesDbConfiguration = new ImagesDbConfiguration();
             Configuration.GetSection("ImagesDB").Bind(imagesDbConfiguration);
@@ -64,9 +64,11 @@ namespace CodeTweet.Web
             services.AddTransient<ITweetsRepository, DocumentDbTweetsRepository>();
             //services.AddTransient<ITweetsRepository, TableStorageTweetsRepository>();
 
-            ZeroConfiguration zeroConfiguration = new ZeroConfiguration();
-            Configuration.GetSection("ZeroMq").Bind(zeroConfiguration);
-            services.AddSingleton<INotificationEnqueue>(provider => new ZeroNotificationEnqueue(zeroConfiguration));
+            var serviceBusConfiguration = new ServiceBusConfiguration();
+            Configuration.GetSection("ServiceBus").Bind(serviceBusConfiguration);
+            services.AddSingleton(serviceBusConfiguration);
+
+            services.AddSingleton<INotificationEnqueue, ServiceBusNotificationEnqueue>();
 
             services.AddTransient<TweetsManager>();
         }

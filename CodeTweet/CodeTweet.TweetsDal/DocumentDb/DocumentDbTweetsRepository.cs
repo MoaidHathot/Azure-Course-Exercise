@@ -54,6 +54,7 @@ namespace CodeTweet.TweetsDal
         
         private static IMapper CreateMapper()
             => new MapperConfiguration(cfg => 
-                cfg.CreateMap<Tweet, TweetDocumentDbEntity>().ReverseMap()).CreateMapper();
+                cfg.CreateMap<Tweet, TweetDocumentDbEntity>().ReverseMap())
+                .CreateMapper();
     }
 }

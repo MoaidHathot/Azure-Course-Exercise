@@ -5,6 +5,6 @@ namespace CodeTweet.Queueing
 {
     public interface INotificationDequeue : IDisposable
     {
-        Tweet[] Dequeue();
+        IObservable<Tweet> Tweets { get; }
     }
 }

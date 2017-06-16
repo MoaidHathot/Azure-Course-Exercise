@@ -1,6 +1,6 @@
 ﻿namespace CodeTweet.TweetsDal
 {
-    public class DocumentDbConfiguration
+    public sealed class DocumentDbConfiguration
     {
         public string EndPoint { get; set; }
         public string PrimaryKey { get; set; }

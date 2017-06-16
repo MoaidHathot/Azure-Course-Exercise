@@ -2,7 +2,7 @@
 using System.IO;
 using CodeTweet.IdentityDal;
 using CodeTweet.Notifications;
-using CodeTweet.Queueing.ZeroMQ;
+using CodeTweet.Queueing.ServiceBus;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using PeterKottas.DotNetCore.WindowsService;
@@ -27,9 +27,9 @@ namespace CodeTweet.Worker
                 {
                     serviceConfig.ServiceFactory(extraArguments =>
                     {
-                        var zeroConfiguration = new ZeroConfiguration();
-                        configuration.GetSection("ZeroMq").Bind(zeroConfiguration);
-                        var notificationDequeue = new ZeroNotificationDequeue(zeroConfiguration);
+                        var zeroConfiguration = new ServiceBusConfiguration();
+                        configuration.GetSection("ServiceBus").Bind(zeroConfiguration);
+                        var notificationDequeue = new ServiceBusNotificationDequeue(zeroConfiguration);
 
                         var identityContextOptionsBuilder = new DbContextOptionsBuilder<ApplicationIdentityContext>();
                         identityContextOptionsBuilder.UseSqlServer(configuration.GetConnectionString("Identity"));
@@ -64,20 +64,14 @@ namespace CodeTweet.Worker
         {
             private readonly NotificationService _inner;
 
-            public NotificationServiceWrapper(NotificationService inner)
-            {
-                _inner = inner;
-            }
+            public NotificationServiceWrapper(NotificationService inner) 
+                => _inner = inner;
 
             public void Start()
-            {
-                _inner.Start();
-            }
+                => _inner.Start();
 
-            public void Stop()
-            {
-                _inner.Stop();
-            }
+            public void Stop() 
+                => _inner.Stop();
         }
     }
 }

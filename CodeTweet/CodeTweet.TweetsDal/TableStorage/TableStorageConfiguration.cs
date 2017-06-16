@@ -1,6 +1,6 @@
 ﻿namespace CodeTweet.TweetsDal
 {
-    public class TableStorageConfiguration
+    public sealed class TableStorageConfiguration
     {
         public string ConnectionString { get; set; }
         public string TableName { get; set; }
