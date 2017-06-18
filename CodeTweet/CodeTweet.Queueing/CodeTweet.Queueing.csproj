@@ -16,8 +16,4 @@
     <ProjectReference Include="..\CodeTweet.Utilities\CodeTweet.Utilities.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Model\" />
-  </ItemGroup>
-
 </Project>
