@@ -48,7 +48,7 @@ namespace CodeTweet.Queueing.ServiceBus
         private static IMapper CreateAutoMapper() 
             => new MapperConfiguration(cfg => 
                 cfg.CreateMap<Tweet, Message>()
-                    .ConvertUsing(tweet => new Message(Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(tweet)))))
+                    .ConvertUsing(tweet => new Message(Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(tweet))){ContentType = "text/plain"}))
                 .CreateMapper();
     }
 }
